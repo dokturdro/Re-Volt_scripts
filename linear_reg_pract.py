@@ -1,7 +1,8 @@
 import pandas as pd
 import quandl, math
 import numpy as np
-from sklearn import preprocessing, cross_validation, svm
+from scipy import sparse
+from sklearn import preprocessing, model_selection, svm
 from sklearn.linear_model import LinearRegression
 
 quandl.ApiConfig.api_key = "EzAELjGNysBk6Nmf5Zn4"
@@ -21,13 +22,13 @@ df['label'] = df[forecast_col].shift(-forecast_out)
 
 X = np.array(df.drop(['label'], 1))
 y = np.array(df['label'])
-
 X = preprocessing.scale(X)
-
-X = X[:-forecast_out+1]
-df.dropna(inplace=True)
 y = np.array(df['label'])
 
-print(len(X), len(y))
+X_train, X_test, y_train, y_test = model_selection.train_test_split(X, y)
 
-print(df.head())
+clf = LinearRegression()
+clf.fit(X_train, y_train)
+acc = clf.score(X_test, y_test)
+
+print(acc)
